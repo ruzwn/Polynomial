@@ -1,10 +1,11 @@
 package math.polynomial
 
 import java.lang.StringBuilder
+import kotlin.math.abs
 
 // TODO: добавить деление многочленов (доп. баллы)
-class Polynomial constructor(vararg coeffs: Double) {
-    private val _coeff: MutableList<Double>
+open class Polynomial constructor(vararg coeffs: Double) {
+    protected var _coeff: MutableList<Double>
     val coeff: List<Double>
         get() = _coeff.toList()
     val degree: Int
@@ -29,13 +30,29 @@ class Polynomial constructor(vararg coeffs: Double) {
         _coeff.asReversed().forEachIndexed { i, v ->
             if (v != 0.0) {
                 if (i > 0) {
-                    strBuilder.append("+")
+                    if (v > 0) {
+                        strBuilder.append("+")
+                    }
                 }
-                strBuilder.append("($v)x^${_coeff.size - i - 1}")
+                if (v < 0) {
+                    strBuilder.append("-")
+                }
+                if (abs(v) == 1.0 && i != _coeff.size - 1) {
+
+                }
+                else {
+                    strBuilder.append("${abs(v)}")
+                }
+                if (i < _coeff.size - 2) {
+                    strBuilder.append("x^${_coeff.size - i - 1}")
+                }
+                if (i == _coeff.size - 2) {
+                    strBuilder.append("x")
+                }
             }
-            if (strBuilder.isEmpty()) {
-                strBuilder.append(0.0)
-            }
+        }
+        if (strBuilder.isEmpty()) {
+            strBuilder.append(0.0)
         }
         return strBuilder.toString()
     }
@@ -55,9 +72,11 @@ class Polynomial constructor(vararg coeffs: Double) {
         return Polynomial(*res)
     }
 
-    operator fun minus(other: Polynomial) : Polynomial {
-        return this + (other * -1.0)
-    }
+    operator fun minus(other: Polynomial) : Polynomial = this + (other * -1.0)
+
+//    operator fun minus(other: Polynomial) : Polynomial {
+//        return this + (other * -1.0)
+//    }
 
     operator fun times(other: Polynomial) : Polynomial {
         val res = DoubleArray(degree + other.degree + 1)
@@ -69,31 +88,13 @@ class Polynomial constructor(vararg coeffs: Double) {
         return Polynomial(*res)
     }
 
-    operator fun times(num: Double) : Polynomial {
-        val res = DoubleArray(degree + 1)
-        coeff.forEachIndexed { i, v ->
-            res[i] = v * num
-        }
-        return Polynomial(*res)
-    }
+    operator fun times(num: Double) : Polynomial = Polynomial(
+        *DoubleArray(degree + 1, init = { i -> coeff[i] * num }))
 
-//    operator fun div(other: Polynomial) : Polynomial {
-//        // Можно ли делить в таком случае?
-//        // this - dividend, other - divisor
-//        if (degree < other.degree) {
-//            throw Exception("Degree of dividend cannot be less than degree of divisor")
-//        }
-//        val remainder = coeff.toDoubleArray()
-//        val quotient = DoubleArray(coeff.count() - other.coeff.count(), init = {0.0})
-//        for (i in 0 until quotient.count()) {
-//            val num = remainder[remainder.count() - i - 1] / other.coeff.last()
-//            quotient[quotient.count() - i - 1] = num
-//            for (j in 0 until coeff.count()) {
-//                remainder[remainder.count() - i - j - 1] = num * coeff[coeff.count() - j - 1]
-//            }
-//        }
+//    operator fun times(num: Double) : Polynomial {
+//        val res = DoubleArray(degree + 1, init = { i -> coeff[i] * num })
 //
-//        return Polynomial(*quotient, *remainder)
+//        return Polynomial(*res)
 //    }
 
     operator fun div(num: Double) : Polynomial {
@@ -102,4 +103,22 @@ class Polynomial constructor(vararg coeffs: Double) {
         }
         return this * (1.0 / num)
     }
+
+    operator fun unaryMinus() : Polynomial {
+        return Polynomial()
+    }
+
+    operator fun unaryPlus() : Polynomial {
+        return Polynomial()
+    }
+
+//    operator fun plusAssign(other: Polynomial) {
+//
+//    }
+
+    operator fun minusAssign(other: Polynomial) {
+
+    }
+
+    // TODO: все операторы и еще операторы нераветсв
 }
