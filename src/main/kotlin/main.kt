@@ -34,4 +34,7 @@ fun main() {
     coeffs2[0.0] = 0.0
     coeffs2[1.0] = 1.0
     println(Lagrange(coeffs2))
+    p4 += p5
+
+    println(p2(3.0))
 }

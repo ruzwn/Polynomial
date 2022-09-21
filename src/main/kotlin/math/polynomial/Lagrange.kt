@@ -2,7 +2,7 @@ package math.polynomial
 
 class Lagrange constructor(nodesAndFunValuePairs: MutableMap<Double, Double>) : Polynomial() {
     init {
-        var lagrange = Polynomial()
+        val lagrange = Polynomial()
         nodesAndFunValuePairs.forEach { (node, funVal) ->
             lagrange += getFundamentalLagrangePolynomial(nodesAndFunValuePairs, node) * funVal
         }
@@ -13,7 +13,7 @@ class Lagrange constructor(nodesAndFunValuePairs: MutableMap<Double, Double>) : 
         nodesAndFunValuePairs: MutableMap<Double, Double>,
         currNode: Double
     ): Polynomial {
-        var polynomial = Polynomial(1.0)
+        val polynomial = Polynomial(1.0)
         nodesAndFunValuePairs.forEach { (node, _) ->
             if (node != currNode) {
                 polynomial *= Polynomial(-1.0 * node / (currNode - node), 1.0 / (currNode - node))

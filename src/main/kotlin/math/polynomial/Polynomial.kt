@@ -2,8 +2,8 @@ package math.polynomial
 
 import java.lang.StringBuilder
 import kotlin.math.abs
+import kotlin.math.pow
 
-// TODO: добавить деление многочленов (доп. баллы)
 open class Polynomial constructor(vararg coeffs: Double) {
     protected var _coeff: MutableList<Double>
     val coeff: List<Double>
@@ -23,7 +23,11 @@ open class Polynomial constructor(vararg coeffs: Double) {
         }
         _coeff = MutableList(tempDegree + 1, init = { i -> temp[i] })
     }
+
     constructor(): this(0.0)
+
+    operator fun invoke(x: Double) : Double =
+        DoubleArray(degree + 1, init = { i -> x.pow(i) * _coeff[i] }).sum()
 
     override fun toString(): String {
         val strBuilder = StringBuilder()
@@ -72,11 +76,9 @@ open class Polynomial constructor(vararg coeffs: Double) {
         return Polynomial(*res)
     }
 
-    operator fun minus(other: Polynomial) : Polynomial = this + (other * -1.0)
-
-//    operator fun minus(other: Polynomial) : Polynomial {
-//        return this + (other * -1.0)
-//    }
+    operator fun minus(other: Polynomial) : Polynomial {
+        return this + (other * -1.0)
+    }
 
     operator fun times(other: Polynomial) : Polynomial {
         val res = DoubleArray(degree + other.degree + 1)
@@ -88,14 +90,10 @@ open class Polynomial constructor(vararg coeffs: Double) {
         return Polynomial(*res)
     }
 
-    operator fun times(num: Double) : Polynomial = Polynomial(
-        *DoubleArray(degree + 1, init = { i -> coeff[i] * num }))
-
-//    operator fun times(num: Double) : Polynomial {
-//        val res = DoubleArray(degree + 1, init = { i -> coeff[i] * num })
-//
-//        return Polynomial(*res)
-//    }
+    operator fun times(num: Double) : Polynomial {
+        val res = DoubleArray(degree + 1, init = { i -> coeff[i] * num })
+        return Polynomial(*res)
+    }
 
     operator fun div(num: Double) : Polynomial {
         if (num == 0.0) {
@@ -105,20 +103,42 @@ open class Polynomial constructor(vararg coeffs: Double) {
     }
 
     operator fun unaryMinus() : Polynomial {
-        return Polynomial()
+        return this * (-1.0)
     }
 
     operator fun unaryPlus() : Polynomial {
-        return Polynomial()
+        return this + Polynomial()
     }
 
-//    operator fun plusAssign(other: Polynomial) {
-//
-//    }
+    operator fun plusAssign(other: Polynomial) {
+        this._coeff = (this + other)._coeff
+    }
 
     operator fun minusAssign(other: Polynomial) {
-
+        this._coeff = (this - other)._coeff
     }
 
+    operator fun timesAssign(other: Polynomial) {
+        this._coeff = (this * other)._coeff
+    }
+
+    override fun equals(other: Any?) : Boolean {
+        if (other !is Polynomial) {
+            return false
+        }
+        if (other.degree != this.degree) {
+            return false
+        }
+        for (i in 0 until this.degree) {
+            if (other.coeff[i] != this.coeff[i]) {
+                return false
+            }
+        }
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return _coeff.hashCode()
+    }
     // TODO: все операторы и еще операторы нераветсв
 }
