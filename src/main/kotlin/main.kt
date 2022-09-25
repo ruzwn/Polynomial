@@ -1,4 +1,5 @@
 import math.polynomial.Lagrange
+import math.polynomial.Newton
 import math.polynomial.Polynomial
 
 fun main() {
@@ -37,4 +38,10 @@ fun main() {
     p4 += p5
 
     println(p2(3.0))
+
+    val coeffs3 = HashMap<Double, Double>()
+    coeffs3[0.0] = -1.0
+    coeffs3[1.0] = 1.0
+    println(Newton(coeffs3))
+    println(Newton(coeffs3).addNode(0.5, 1.0))
 }
