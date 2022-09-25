@@ -6,7 +6,7 @@ class Lagrange constructor(nodesAndFunValuePairs: MutableMap<Double, Double>) : 
         nodesAndFunValuePairs.forEach { (node, funVal) ->
             lagrange += getFundamentalLagrangePolynomial(nodesAndFunValuePairs, node) * funVal
         }
-        _coeff = lagrange.coeff.toMutableList()
+        _coeffs = lagrange.coeffs.toMutableList()
     }
 
     private fun getFundamentalLagrangePolynomial(

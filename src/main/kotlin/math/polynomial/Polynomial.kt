@@ -4,70 +4,74 @@ import java.lang.StringBuilder
 import kotlin.math.abs
 import kotlin.math.pow
 
-open class Polynomial constructor(vararg coeffs: Double) {
-    protected var _coeff: MutableList<Double>
-    val coeff: List<Double>
-        get() = _coeff.toList()
+// TODO: сравнение вещественных чисел переделать, добавить сравнение (У Маклецова) ?
+// TODO: вычисление полином Лагранжа методом Ньютона (не надо пересчитывать полностью при добавлении узла)
+// TODO: бенчмарк полинома Лагранжа и полинома Ньютона (просто и при добавлении узла)
+// TODO: использовать формулу, которая не рекурсивная
+open class Polynomial constructor(vararg coeffArgs: Double) {
+    protected var _coeffs: MutableList<Double>
+    val coeffs: List<Double>
+        get() = _coeffs.toList()
     val degree: Int
-        get() = _coeff.size - 1
+        get() = _coeffs.size - 1
 
     init {
         // Если, например, Polynomial(1.0, 4.0, 0.0), то степень будет 1, а не 2
-        val temp = coeffs.toMutableList()
+        val tempCoeffs = coeffArgs.toMutableList()
         var tempDegree = 0
-        for (i in temp.count() - 1 downTo  0) {
-            if (temp[i] != 0.0) {
+        for (i in tempCoeffs.count() - 1 downTo  0) {
+            if (tempCoeffs[i] != 0.0) {
                 tempDegree = i
                 break
             }
         }
-        _coeff = MutableList(tempDegree + 1, init = { i -> temp[i] })
+        this._coeffs = MutableList(tempDegree + 1, init = { i -> tempCoeffs[i] })
     }
 
     constructor(): this(0.0)
 
     operator fun invoke(x: Double) : Double =
-        DoubleArray(degree + 1, init = { i -> x.pow(i) * _coeff[i] }).sum()
+        DoubleArray(degree + 1, init = { i -> x.pow(i) * _coeffs[i] }).sum()
 
     override fun toString(): String {
-        val strBuilder = StringBuilder()
-        _coeff.asReversed().forEachIndexed { i, v ->
+        val builder = StringBuilder()
+        _coeffs.asReversed().forEachIndexed { i, v ->
             if (v != 0.0) {
                 if (i > 0) {
                     if (v > 0) {
-                        strBuilder.append("+")
+                        builder.append("+")
                     }
                 }
                 if (v < 0) {
-                    strBuilder.append("-")
+                    builder.append("-")
                 }
-                if (abs(v) == 1.0 && i != _coeff.size - 1) {
+                if (abs(v) == 1.0 && i != _coeffs.size - 1) {
 
                 }
                 else {
-                    strBuilder.append("${abs(v)}")
+                    builder.append("${abs(v)}")
                 }
-                if (i < _coeff.size - 2) {
-                    strBuilder.append("x^${_coeff.size - i - 1}")
+                if (i < _coeffs.size - 2) {
+                    builder.append("x^${_coeffs.size - i - 1}")
                 }
-                if (i == _coeff.size - 2) {
-                    strBuilder.append("x")
+                if (i == _coeffs.size - 2) {
+                    builder.append("x")
                 }
             }
         }
-        if (strBuilder.isEmpty()) {
-            strBuilder.append(0.0)
+        if (builder.isEmpty()) {
+            builder.append(0.0)
         }
-        return strBuilder.toString()
+        return builder.toString()
     }
 
     operator fun plus(other: Polynomial) : Polynomial {
         val (min, max) =
             if (degree < other.degree) {
-                arrayOf(coeff, other.coeff)
+                arrayOf(coeffs, other.coeffs)
             }
             else {
-                arrayOf(other.coeff, coeff)
+                arrayOf(other.coeffs, coeffs)
             }
         val res = max.toDoubleArray()
         min.forEachIndexed { i, v ->
@@ -82,8 +86,8 @@ open class Polynomial constructor(vararg coeffs: Double) {
 
     operator fun times(other: Polynomial) : Polynomial {
         val res = DoubleArray(degree + other.degree + 1)
-        coeff.forEachIndexed {i, vi ->
-            other.coeff.forEachIndexed { j, vj ->
+        _coeffs.forEachIndexed { i, vi ->
+            other._coeffs.forEachIndexed { j, vj ->
                 res[i+j] += vi * vj
             }
         }
@@ -91,7 +95,7 @@ open class Polynomial constructor(vararg coeffs: Double) {
     }
 
     operator fun times(num: Double) : Polynomial {
-        val res = DoubleArray(degree + 1, init = { i -> coeff[i] * num })
+        val res = DoubleArray(degree + 1, init = { i -> _coeffs[i] * num })
         return Polynomial(*res)
     }
 
@@ -111,15 +115,15 @@ open class Polynomial constructor(vararg coeffs: Double) {
     }
 
     operator fun plusAssign(other: Polynomial) {
-        this._coeff = (this + other)._coeff
+        this._coeffs = (this + other)._coeffs
     }
 
     operator fun minusAssign(other: Polynomial) {
-        this._coeff = (this - other)._coeff
+        this._coeffs = (this - other)._coeffs
     }
 
     operator fun timesAssign(other: Polynomial) {
-        this._coeff = (this * other)._coeff
+        this._coeffs = (this * other)._coeffs
     }
 
     override fun equals(other: Any?) : Boolean {
@@ -130,7 +134,7 @@ open class Polynomial constructor(vararg coeffs: Double) {
             return false
         }
         for (i in 0 until this.degree) {
-            if (other.coeff[i] != this.coeff[i]) {
+            if (other._coeffs[i] != this._coeffs[i]) {
                 return false
             }
         }
@@ -138,7 +142,6 @@ open class Polynomial constructor(vararg coeffs: Double) {
     }
 
     override fun hashCode(): Int {
-        return _coeff.hashCode()
+        return _coeffs.hashCode()
     }
-    // TODO: все операторы и еще операторы нераветсв
 }
