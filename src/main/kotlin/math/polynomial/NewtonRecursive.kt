@@ -1,6 +1,6 @@
 package math.polynomial
 
-class Newton constructor(nodesAndFunValuePairs: MutableMap<Double, Double>) : Polynomial() {
+class NewtonRecursive constructor(nodesAndFunValuePairs: MutableMap<Double, Double>) : Polynomial() {
     fun addNode(node: Double, funVal: Double): Polynomial {
         if (_nodes.contains(node)) {
             throw Exception("Can't add existing node")

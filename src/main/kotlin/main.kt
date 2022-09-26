@@ -1,5 +1,5 @@
 import math.polynomial.Lagrange
-import math.polynomial.Newton
+import math.polynomial.NewtonRecursive
 import math.polynomial.Polynomial
 
 fun main() {
@@ -42,6 +42,6 @@ fun main() {
     val coeffs3 = HashMap<Double, Double>()
     coeffs3[0.0] = -1.0
     coeffs3[1.0] = 1.0
-    println(Newton(coeffs3))
-    println(Newton(coeffs3).addNode(0.5, 1.0))
+    println(NewtonRecursive(coeffs3))
+    println(NewtonRecursive(coeffs3).addNode(0.5, 1.0))
 }
