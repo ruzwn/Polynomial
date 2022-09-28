@@ -4,10 +4,6 @@ import java.lang.StringBuilder
 import kotlin.math.abs
 import kotlin.math.pow
 
-// TODO: сравнение вещественных чисел переделать, добавить сравнение (У Маклецова) ?
-// TODO: вычисление полином Лагранжа методом Ньютона (не надо пересчитывать полностью при добавлении узла)
-// TODO: бенчмарк полинома Лагранжа и полинома Ньютона (просто и при добавлении узла)
-// TODO: использовать формулу, которая не рекурсивная
 open class Polynomial constructor(vararg coeffArgs: Double) {
     protected var _coeffs: MutableList<Double>
     val coeffs: List<Double>
@@ -20,7 +16,7 @@ open class Polynomial constructor(vararg coeffArgs: Double) {
         val tempCoeffs = coeffArgs.toMutableList()
         var tempDegree = 0
         for (i in tempCoeffs.count() - 1 downTo  0) {
-            if (tempCoeffs[i] != 0.0) {
+            if (tempCoeffs[i] neq 0.0) {
                 tempDegree = i
                 break
             }
@@ -36,7 +32,7 @@ open class Polynomial constructor(vararg coeffArgs: Double) {
     override fun toString(): String {
         val builder = StringBuilder()
         _coeffs.asReversed().forEachIndexed { i, v ->
-            if (v != 0.0) {
+            if (v neq 0.0) {
                 if (i > 0) {
                     if (v > 0) {
                         builder.append("+")
@@ -45,7 +41,7 @@ open class Polynomial constructor(vararg coeffArgs: Double) {
                 if (v < 0) {
                     builder.append("-")
                 }
-                if (abs(v) == 1.0 && i != _coeffs.size - 1) {
+                if (abs(v) eq 1.0 && i != _coeffs.size - 1) {
 
                 }
                 else {
@@ -100,7 +96,7 @@ open class Polynomial constructor(vararg coeffArgs: Double) {
     }
 
     operator fun div(num: Double) : Polynomial {
-        if (num == 0.0) {
+        if (num eq 0.0) {
             throw Exception("Division by zero forbidden")
         }
         return this * (1.0 / num)
@@ -134,7 +130,7 @@ open class Polynomial constructor(vararg coeffArgs: Double) {
             return false
         }
         for (i in 0 until this.degree) {
-            if (other._coeffs[i] != this._coeffs[i]) {
+            if (other._coeffs[i] neq this._coeffs[i]) {
                 return false
             }
         }
