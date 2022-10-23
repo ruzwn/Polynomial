@@ -17,7 +17,7 @@ object CartesianAndScreenConverter {
         if (yOnScreen < -plane.height) {
             yOnScreen = -plane.height
         }
-        if (yOnScreen > 2 * plane.height + 10) {
+        if (yOnScreen > 2 * plane.height) {
             yOnScreen = 2 * plane.height
         }
         return yOnScreen
