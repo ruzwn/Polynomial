@@ -2,7 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/CartesianAndScreenConverter/CartesianAndScreenConverter.iml" filepath="$PROJECT_DIR$/CartesianAndScreenConverter/CartesianAndScreenConverter.iml" />
       <module fileurl="file://$PROJECT_DIR$/Polynomial.iml" filepath="$PROJECT_DIR$/Polynomial.iml" />
+      <module fileurl="file://$PROJECT_DIR$/PolynomialGraphics/PolynomialGraphics.iml" filepath="$PROJECT_DIR$/PolynomialGraphics/PolynomialGraphics.iml" />
     </modules>
   </component>
 </project>
