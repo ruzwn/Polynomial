@@ -38,10 +38,10 @@ class MainWindow : JFrame() {
         val plane = CartesianPlaneOnScreen(
             mainPanel.width,
             mainPanel.height,
-            (-5).toDouble(),
+            (-5.5).toDouble(),
             5.toDouble(),
             (-5).toDouble(),
-            5.toDouble()
+            5.3.toDouble()
 //            controlPanel.smXMin.number.toDouble(),
 //            controlPanel.smXMax.number.toDouble(),
 //            controlPanel.smYMin.number.toDouble(),

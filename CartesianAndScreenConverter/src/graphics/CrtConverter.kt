@@ -1,6 +1,6 @@
 package graphics
 
-object CartesianAndScreenConverter {
+object CrtConverter {
     fun xFromCrtToScr(x: Double, plane: CartesianPlaneOnScreen): Int {
         var xOnScreen = (plane.xUnit * (x - plane.xMin)).toInt()
         if (xOnScreen < -plane.width) {
