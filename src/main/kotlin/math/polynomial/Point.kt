@@ -2,6 +2,7 @@ package math.polynomial
 
 import kotlin.math.abs
 
+// todo: брать _radiusInPixels извне?
 class Point(
     val xScr: Int,
     val yScr: Int,

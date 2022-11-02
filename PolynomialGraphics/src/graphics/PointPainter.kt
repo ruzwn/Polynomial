@@ -4,6 +4,7 @@ import math.polynomial.Point
 import java.awt.Color
 import java.awt.Graphics
 
+// todo: изменить тип _points?
 class PointPainter(val plane: CrtPlaneOnScreen): Painter {
     private val _points: MutableList<Point> = MutableList(0) { Point(0, 0, 0.0, 0.0) }
     private val _diameterInPixels: Int = 10
