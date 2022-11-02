@@ -41,7 +41,7 @@ class MainWindow : JFrame() {
             -7.5,
             3.5,
             -4.8,
-            8.3
+            8.7
 //            controlPanel.smXMin.number.toDouble(),
 //            controlPanel.smXMax.number.toDouble(),
 //            controlPanel.smYMin.number.toDouble(),

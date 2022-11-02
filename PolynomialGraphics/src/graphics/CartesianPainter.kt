@@ -2,6 +2,7 @@ package graphics
 
 import math.polynomial.eq
 import math.polynomial.geq
+import math.polynomial.leq
 import java.awt.Graphics
 
 
@@ -94,6 +95,26 @@ class CartesianPainter(override var width: Int, override var height: Int, val pl
         val strokesOnOyCount = (plane.yMax - plane.yMin + 0.4).toInt()
         val yMax = plane.yMax.toInt()
         for (i in 0..strokesOnOyCount) {
+            var j = -0.1
+            while (j leq 1.0) {
+                j += 0.1
+                if (j eq 0.5) {
+                    gr.drawLine(
+                        CrtConverter.xFromCrtToScr(-0.15, plane),
+                        (CrtConverter.yFromCrtToScr(yMax - i + j, plane)),
+                        CrtConverter.xFromCrtToScr(0.15, plane),
+                        (CrtConverter.yFromCrtToScr(yMax - i + j, plane))
+                    )
+                    continue
+                }
+
+                gr.drawLine(
+                    CrtConverter.xFromCrtToScr(-0.08, plane),
+                    (CrtConverter.yFromCrtToScr(yMax - i + j, plane)),
+                    CrtConverter.xFromCrtToScr(0.08, plane),
+                    (CrtConverter.yFromCrtToScr(yMax - i + j, plane))
+                )
+            }
             gr.drawLine(
                 CrtConverter.xFromCrtToScr(-0.2, plane),
                 (CrtConverter.yFromCrtToScr((yMax - i).toDouble(), plane)),
