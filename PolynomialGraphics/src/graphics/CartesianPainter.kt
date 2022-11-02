@@ -125,28 +125,29 @@ class CartesianPainter(val plane: CrtPlaneOnScreen): Painter {
     }
 
     private fun drawAxes(gr: Graphics) {
-        // Ox
+        val xForOxAxe =
+            if (plane.yMin geq 0.0) plane.yMin + 0.01
+            else if (plane.yMax leq 0.0) plane.yMax - 0.01
+            else 0.0
+        val yForOyAxe =
+            if (plane.xMin geq 0.0) plane.xMin + 0.01
+            else if (plane.xMax leq 0.0) plane.xMax - 0.01
+            else 0.0
+
+        // Ox axe
         gr.drawLine(
             0,
-            CrtConverter.yFromCrtToScr(0.0, plane),
+            CrtConverter.yFromCrtToScr(xForOxAxe, plane),
             plane.width,
-            CrtConverter.yFromCrtToScr(0.0, plane)
-        )
-        // Oy
-        gr.drawLine(
-            CrtConverter.xFromCrtToScr(0.0, plane),
-            0,
-            CrtConverter.xFromCrtToScr(0.0, plane),
-            plane.height
+            CrtConverter.yFromCrtToScr(xForOxAxe, plane)
         )
 
-//        // Точка слева посередине
-//        gr.drawOval(0, CrtConverter.yFromCrtToScr(0.0, plane), 5, 5)
-//        // Справа посередине
-//        gr.drawOval(plane.width, CrtConverter.yFromCrtToScr(0.0, plane), 5, 5)
-//        // Посередине сверху
-//        gr.drawOval(CrtConverter.xFromCrtToScr(0.0, plane), 0, 5, 5)
-//        // Посередине снизу
-//        gr.drawOval(CrtConverter.xFromCrtToScr(0.0, plane), plane.height, 5, 5)
+        // Oy axe
+        gr.drawLine(
+            CrtConverter.xFromCrtToScr(yForOyAxe, plane),
+            0,
+            CrtConverter.xFromCrtToScr(yForOyAxe, plane),
+            plane.height
+        )
     }
 }
