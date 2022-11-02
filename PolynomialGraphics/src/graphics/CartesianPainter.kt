@@ -6,7 +6,7 @@ import math.polynomial.leq
 import java.awt.Graphics
 
 
-class CartesianPainter(override var width: Int, override var height: Int, val plane: CrtPlaneOnScreen): Painter {
+class CartesianPainter(val plane: CrtPlaneOnScreen): Painter {
     override fun paint(gr: Graphics?) {
         if (gr == null) {
             return

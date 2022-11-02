@@ -12,48 +12,54 @@ import javax.swing.JFrame
 class MainWindow : JFrame() {
     private val minSize = Dimension(550, 400)
     private val mainPanel: GraphicsPanel
-
-    init {
+    private val controlPanel: ControlPanel
+    init{
         defaultCloseOperation = EXIT_ON_CLOSE
-        minimumSize = Dimension(minSize.width + 200, minSize.height + 400)
+        minimumSize = Dimension(minSize.width+200, minSize.height+400)
         mainPanel = GraphicsPanel()
         mainPanel.background = Color.WHITE
-
+        controlPanel = ControlPanel()
         val gl = GroupLayout(contentPane)
-        gl.setVerticalGroup(
-            gl.createSequentialGroup()
-                .addGap(4)
-                .addComponent(mainPanel, minSize.height, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE)
-                .addGap(4)
+
+        gl.setVerticalGroup(gl.createSequentialGroup()
+            .addGap(4)
+            .addComponent(mainPanel, minSize.height, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE)
+            .addGap(4)
+            .addComponent(controlPanel, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
+            .addGap(4)
         )
-        gl.setHorizontalGroup(
-            gl.createSequentialGroup()
-                .addGap(4)
-                .addComponent(mainPanel, minSize.width, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE)
-                .addGap(4)
-        )
+
+        gl.setHorizontalGroup(gl.createSequentialGroup()
+            .addGap(4)
+            .addGroup(
+                gl.createParallelGroup()
+                    .addComponent(mainPanel, minSize.width, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE)
+                    .addComponent(controlPanel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE)
+            )
+            .addGap(4))
         layout = gl
         pack()
-
         val plane = CrtPlaneOnScreen(
-            mainPanel.width,
-            mainPanel.height,
-            -7.5,
-            3.5,
-            -4.8,
-            8.7
-//            controlPanel.smXMin.number.toDouble(),
-//            controlPanel.smXMax.number.toDouble(),
-//            controlPanel.smYMin.number.toDouble(),
-//            controlPanel.smYMax.number.toDouble()
+            mainPanel.width, mainPanel.height,
+            controlPanel.smXMin.number.toDouble(),
+            controlPanel.smXMax.number.toDouble(),
+            controlPanel.smYMin.number.toDouble(),
+            controlPanel.smYMax.number.toDouble()
         )
-        val crtPainter = CartesianPainter(mainPanel.width, mainPanel.height, plane)
+        val dp = CartesianPainter(plane)
         mainPanel.addComponentListener(object : ComponentAdapter() {
             override fun componentResized(e: ComponentEvent?) {
-                crtPainter.plane.realWidth = mainPanel.width
-                crtPainter.plane.realHeight = mainPanel.height
+                dp.plane.realWidth = mainPanel.width
+                dp.plane.realHeight = mainPanel.height
             }
         })
-        mainPanel.addPainter(crtPainter)
+        controlPanel.addValChangeListener {
+            dp.plane.xMin = controlPanel.smXMin.number.toDouble()
+            dp.plane.xMax = controlPanel.smXMax.number.toDouble()
+            dp.plane.yMin = controlPanel.smYMin.number.toDouble()
+            dp.plane.yMax = controlPanel.smYMax.number.toDouble()
+            mainPanel.repaint()
+        }
+        mainPanel.addPainter(dp)
     }
 }
