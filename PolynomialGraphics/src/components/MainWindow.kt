@@ -39,7 +39,7 @@ class MainWindow : JFrame() {
             mainPanel.width,
             mainPanel.height,
             -7.5,
-            3.09,
+            3.5,
             -4.8,
             8.3
 //            controlPanel.smXMin.number.toDouble(),
