@@ -2,6 +2,8 @@ package components
 
 import graphics.CartesianPainter
 import graphics.CrtPlaneOnScreen
+import graphics.PointPainter
+import math.polynomial.Point
 import java.awt.Color
 import java.awt.Dimension
 import java.awt.event.ComponentAdapter
@@ -61,5 +63,12 @@ class MainWindow : JFrame() {
             mainPanel.repaint()
         }
         mainPanel.addPainter(dp)
+
+        val pointPainter = PointPainter(plane)
+        pointPainter.addPoint(Point(3.8, 2.3))
+        pointPainter.addPoint(Point(0.0,0.0))
+        pointPainter.addPoint(Point(-1.0, -3.0))
+
+        mainPanel.addPainter(pointPainter)
     }
 }
