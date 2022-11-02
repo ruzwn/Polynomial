@@ -21,8 +21,8 @@ class ControlPanel : JPanel(){
     val smYMax: SpinnerNumberModel
 
     companion object{
-        private val MIN_SZ = GroupLayout.PREFERRED_SIZE
-        private val MAX_SZ = GroupLayout.DEFAULT_SIZE
+        private const val MIN_SZ = GroupLayout.PREFERRED_SIZE
+        private const val MAX_SZ = GroupLayout.DEFAULT_SIZE
     }
 
     private val valChangeListeners = mutableListOf<()->Unit>()
