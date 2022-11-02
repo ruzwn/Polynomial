@@ -16,7 +16,8 @@ class CartesianPainter(override var width: Int, override var height: Int, val pl
 
     private fun drawNumbersNearStrokes(gr: Graphics) {
         // Ox
-        val strokesOnOxCount = (plane.xMax - plane.xMin).toInt()
+        // + 0.4 чтобы при приведении к инту не потерять одну единицу
+        val strokesOnOxCount = (plane.xMax - plane.xMin + 0.4).toInt()
         val xMin = plane.xMin.toInt()
         for (i in 0..strokesOnOxCount) {
             val numNearStroke = xMin + i
@@ -26,12 +27,13 @@ class CartesianPainter(override var width: Int, override var height: Int, val pl
 
             gr.drawString(
                 "$numNearStroke",
-                (plane.xUnit * i + CrtConverter.xFromCrtToScr(plane.xMin.toInt().toDouble(), plane) - 0.3).toInt(),
-                CrtConverter.yFromCrtToScr(0.35, plane)
+                (CrtConverter.xFromCrtToScr((xMin + i).toDouble(), plane) - 0.3).toInt(),
+                CrtConverter.yFromCrtToScr(-0.35, plane)
             )
         }
         // Oy
-        val strokesOnOyCount = (plane.yMax - plane.yMin).toInt()
+        // + 0.4 чтобы при приведении к инту не потерять одну единицу
+        val strokesOnOyCount = (plane.yMax - plane.yMin + 0.4).toInt()
         val yMax = plane.yMax.toInt()
         for (i in 0..strokesOnOyCount) {
             val numNearStroke = yMax - i
@@ -39,7 +41,7 @@ class CartesianPainter(override var width: Int, override var height: Int, val pl
                 gr.drawString(
                     "$numNearStroke",
                     CrtConverter.xFromCrtToScr(-0.35, plane),
-                    (plane.yUnit * i + CrtConverter.yFromCrtToScr(plane.xMin.toInt().toDouble() + 0.3, plane)).toInt(),
+                    (CrtConverter.yFromCrtToScr((yMax - i).toDouble() - 0.35, plane)),
                 )
                 continue
             }
@@ -47,24 +49,27 @@ class CartesianPainter(override var width: Int, override var height: Int, val pl
             gr.drawString(
                 "$numNearStroke",
                 CrtConverter.xFromCrtToScr(-0.35, plane),
-                (plane.yUnit * i + CrtConverter.yFromCrtToScr(plane.xMin.toInt().toDouble(), plane)).toInt(),
+                (CrtConverter.yFromCrtToScr((yMax - i).toDouble(), plane)),
             )
         }
     }
 
     private fun drawStrokesOnAxes(gr: Graphics) {
         // Ox
-        val strokesOnOxCount = (plane.xMax - plane.xMin).toInt()
+        // + 0.4 чтобы при приведении к инту не потерять одну единицу
+        val strokesOnOxCount = (plane.xMax - plane.xMin + 0.4).toInt()
+        val xMin = plane.xMin.toInt()
         for (i in 0..strokesOnOxCount) {
             gr.drawLine(
-                (CrtConverter.xFromCrtToScr((plane.xMin + i).toInt().toDouble(), plane)),
+                (CrtConverter.xFromCrtToScr((xMin + i).toDouble(), plane)),
                 CrtConverter.yFromCrtToScr(-0.2, plane),
-                (CrtConverter.xFromCrtToScr((plane.xMin + i).toInt().toDouble(), plane)),
+                (CrtConverter.xFromCrtToScr((xMin + i).toDouble(), plane)),
                 CrtConverter.yFromCrtToScr(0.2, plane)
             )
         }
         // Oy
-        val strokesOnOyCount = (plane.yMax - plane.yMin).toInt()
+        // + 0.4 чтобы при приведении к инту не потерять одну единицу
+        val strokesOnOyCount = (plane.yMax - plane.yMin + 0.4).toInt()
         for (i in 0..strokesOnOyCount) {
             gr.drawLine(
                 CrtConverter.xFromCrtToScr(-0.2, plane),
