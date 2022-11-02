@@ -72,12 +72,26 @@ class MainWindow : JFrame() {
                     return
                 }
 
-                pointPainter.addPoint(
-                    Point(
-                        CrtConverter.xFromScrToCrt(e.x, plane),
-                        CrtConverter.yFromScrToCrt(e.y, plane)
+                if (e.button == MouseEvent.BUTTON1) {
+                    pointPainter.addPoint(
+                        Point(
+                            e.x,
+                            e.y,
+                            CrtConverter.xFromScrToCrt(e.x, plane),
+                            CrtConverter.yFromScrToCrt(e.y, plane)
+                        )
                     )
-                )
+                }
+                if (e.button == MouseEvent.BUTTON3) {
+                    pointPainter.removePoint(
+                        Point(
+                            e.x,
+                            e.y,
+                            CrtConverter.xFromScrToCrt(e.x, plane),
+                            CrtConverter.yFromScrToCrt(e.y, plane)
+                        )
+                    )
+                }
                 mainPanel.repaint()
             }
         })
