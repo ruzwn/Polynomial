@@ -42,6 +42,6 @@ object CrtConverter {
         if (_y > 2 * plane.height) {
             _y = 2 * plane.height
         }
-        return _y / plane.yUnit + plane.yMin
+        return plane.yMax - _y / plane.yUnit
     }
 }

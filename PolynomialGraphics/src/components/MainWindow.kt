@@ -1,13 +1,13 @@
 package components
 
 import graphics.CartesianPainter
+import graphics.CrtConverter
 import graphics.CrtPlaneOnScreen
 import graphics.PointPainter
 import math.polynomial.Point
 import java.awt.Color
 import java.awt.Dimension
-import java.awt.event.ComponentAdapter
-import java.awt.event.ComponentEvent
+import java.awt.event.*
 import javax.swing.GroupLayout
 import javax.swing.JFrame
 
@@ -65,10 +65,21 @@ class MainWindow : JFrame() {
         mainPanel.addPainter(dp)
 
         val pointPainter = PointPainter(plane)
-        pointPainter.addPoint(Point(3.8, 2.3))
-        pointPainter.addPoint(Point(0.0,0.0))
-        pointPainter.addPoint(Point(-1.0, -3.0))
-
         mainPanel.addPainter(pointPainter)
+        mainPanel.addMouseListener(object: MouseAdapter() {
+            override fun mouseClicked(e: MouseEvent?) {
+                if (e == null) {
+                    return
+                }
+
+                pointPainter.addPoint(
+                    Point(
+                        CrtConverter.xFromScrToCrt(e.x, plane),
+                        CrtConverter.yFromScrToCrt(e.y, plane)
+                    )
+                )
+                mainPanel.repaint()
+            }
+        })
     }
 }
