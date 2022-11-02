@@ -1,7 +1,7 @@
 package components
 
 import graphics.CartesianPainter
-import graphics.CartesianPlaneOnScreen
+import graphics.CrtPlaneOnScreen
 import java.awt.Color
 import java.awt.Dimension
 import java.awt.event.ComponentAdapter
@@ -35,13 +35,13 @@ class MainWindow : JFrame() {
         layout = gl
         pack()
 
-        val plane = CartesianPlaneOnScreen(
+        val plane = CrtPlaneOnScreen(
             mainPanel.width,
             mainPanel.height,
-            (-5.5).toDouble(),
-            5.toDouble(),
-            (-5).toDouble(),
-            5.3.toDouble()
+            -7.5,
+            3.4,
+            -4.8,
+            8.3
 //            controlPanel.smXMin.number.toDouble(),
 //            controlPanel.smXMax.number.toDouble(),
 //            controlPanel.smYMin.number.toDouble(),

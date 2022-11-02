@@ -1,7 +1,7 @@
 package graphics
 
 object CrtConverter {
-    fun xFromCrtToScr(x: Double, plane: CartesianPlaneOnScreen): Int {
+    fun xFromCrtToScr(x: Double, plane: CrtPlaneOnScreen): Int {
         var xOnScreen = (plane.xUnit * (x - plane.xMin)).toInt()
         if (xOnScreen < -plane.width) {
             xOnScreen = -plane.width
@@ -12,8 +12,8 @@ object CrtConverter {
         return xOnScreen
     }
 
-    fun yFromCrtToScr(y: Double, plane: CartesianPlaneOnScreen): Int {
-        var yOnScreen = (plane.yUnit * (y - plane.yMin)).toInt()
+    fun yFromCrtToScr(y: Double, plane: CrtPlaneOnScreen): Int {
+        var yOnScreen = (plane.yUnit * (plane.yMax - y)).toInt()
         if (yOnScreen < -plane.height) {
             yOnScreen = -plane.height
         }
@@ -23,7 +23,7 @@ object CrtConverter {
         return yOnScreen
     }
 
-    fun xFromScrToCrt(x: Int, plane: CartesianPlaneOnScreen): Double {
+    fun xFromScrToCrt(x: Int, plane: CrtPlaneOnScreen): Double {
         var _x = x
         if (_x < -plane.width) {
             _x = -plane.width
@@ -34,7 +34,7 @@ object CrtConverter {
         return _x / plane.xUnit + plane.xMin
     }
 
-    fun yFromScrToCrt(y: Int, plane: CartesianPlaneOnScreen): Double {
+    fun yFromScrToCrt(y: Int, plane: CrtPlaneOnScreen): Double {
         var _y = y
         if (_y < -plane.height) {
             _y = -plane.height

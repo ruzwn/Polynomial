@@ -1,6 +1,6 @@
 package graphics
 
-data class CartesianPlaneOnScreen(
+data class CrtPlaneOnScreen(
     var realWidth: Int,
     var realHeight: Int,
     var xMin: Double,

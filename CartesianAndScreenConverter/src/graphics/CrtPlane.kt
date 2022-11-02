@@ -1,6 +1,6 @@
 package graphics
 
-data class CartesianPlane(
+data class CrtPlane(
     var xMin: Double,
     var xMax: Double,
     var yMin: Double,
