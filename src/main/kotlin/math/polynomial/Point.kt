@@ -2,20 +2,19 @@ package math.polynomial
 
 import kotlin.math.abs
 
-// todo: брать _radiusInPixels извне?
 class Point(
     val xScr: Int,
     val yScr: Int,
     val xCrt: Double,
     val yCrt: Double,
+    // todo: убрать radiusInPixels из этого класса?
+    val radiusInPixels: Int
 ) {
-    private val _radiusInPixels: Int = 5
-
     override fun equals(other: Any?): Boolean {
         if (other is Point) {
             if (
-                abs(xScr - other.xScr) <= _radiusInPixels
-                && abs(yScr - other.yScr) <= _radiusInPixels
+                abs(xScr - other.xScr) <= radiusInPixels
+                && abs(yScr - other.yScr) <= radiusInPixels
             ) {
                 return true
             }

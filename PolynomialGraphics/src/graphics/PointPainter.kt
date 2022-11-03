@@ -5,26 +5,34 @@ import java.awt.Color
 import java.awt.Graphics
 
 // todo: изменить тип _points?
-class PointPainter(val plane: CrtPlaneOnScreen): Painter {
-    private val _points: MutableList<Point> = MutableList(0) { Point(0, 0, 0.0, 0.0) }
-    private val _diameterInPixels: Int = 10
-
+class PointPainter(
+    val plane: CrtPlaneOnScreen, 
+    val diameterInPixels: Int, 
+    val color: Color
+): Painter {
+    private val _points: MutableCollection<Point> = MutableList(0) { 
+        Point(0, 0, 0.0, 0.0, diameterInPixels / 2) 
+    }
+    val points: MutableList<Point>
+            get() = mutableListOf(*_points.toTypedArray())
+    
     override fun paint(gr: Graphics?) {
         if (gr == null) {
             return
         }
 
-        gr.color = Color.ORANGE
+        val prevColor = gr.color
+        gr.color = color
         _points.forEach { point ->
             val xOnScreen: Int = CrtConverter.xFromCrtToScr(point.xCrt, plane)
             val yOnScreen: Int = CrtConverter.yFromCrtToScr(point.yCrt, plane)
             gr.fillOval(
-                xOnScreen - (_diameterInPixels / 2),
-                yOnScreen - (_diameterInPixels / 2),
-                _diameterInPixels,
-                _diameterInPixels)
+                xOnScreen - (diameterInPixels / 2),
+                yOnScreen - (diameterInPixels / 2),
+                diameterInPixels,
+                diameterInPixels)
         }
-        gr.color = Color.BLACK
+        gr.color = prevColor
     }
 
     fun addPoint(point: Point) {
