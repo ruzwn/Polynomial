@@ -31,9 +31,6 @@ class FunctionPainter(
             val y2Scr = CrtConverter.yFromCrtToScr(y2Crt, plane)
             
             gr.drawLine(x1Scr, y1Scr, x2Scr, y2Scr)
-//            println("x${i}: $i; y${i}: $y1")
-//            println("x${i+1}: ${i+1}; y${i+1}: $y2")
-//            println()
         }
         
         gr.color = prevColor

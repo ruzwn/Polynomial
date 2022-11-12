@@ -13,17 +13,6 @@ class Newton constructor(nodesAndFunValuePairs: MutableMap<Double, Double>): Pol
         _coeffs = (Polynomial(*_coeffs.toDoubleArray()) + (_valueOfW * getDividedDifference(_nodes.size - 1)))
             .coeffs
             .toMutableList()
-
-//        return Polynomial(*_coeffs.toDoubleArray()) + (_valueOfW * getDividedDifference(_nodes.size - 1))
-        
-//        val newNodeAndFunValuePairs = HashMap<Double, Double>()
-//        for (i in 0 until  _nodes.size) {
-//            newNodeAndFunValuePairs[_nodes[i]] = _funValues[i]
-//        }
-//        
-//        newNodeAndFunValuePairs[node] = funVal
-//        
-//        return Newton(newNodeAndFunValuePairs)
     }
 
     private val _nodes: ArrayList<Double> = ArrayList(nodesAndFunValuePairs.size)
