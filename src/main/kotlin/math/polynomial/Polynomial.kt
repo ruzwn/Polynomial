@@ -25,6 +25,16 @@ open class Polynomial constructor(vararg coeffArgs: Double) {
     }
 
     constructor(): this(0.0)
+    
+    fun getDerivative(): Polynomial {
+        var newCoeffs = _coeffs.drop(1)
+        newCoeffs = newCoeffs.mapIndexed { i, v -> v * (i + 1) }
+        if (newCoeffs.isEmpty()) {
+            return Polynomial()
+        }
+        
+        return Polynomial(*newCoeffs.toDoubleArray())
+    }
 
     operator fun invoke(x: Double) : Double =
         DoubleArray(degree + 1, init = { i -> x.pow(i) * _coeffs[i] }).sum()

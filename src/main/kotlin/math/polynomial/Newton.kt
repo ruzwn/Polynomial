@@ -8,7 +8,7 @@ class Newton constructor(nodesAndFunValuePairs: MutableMap<Double, Double>): Pol
         
         _nodes.add(node)
         _funValues.add(funVal)
-        _valueOfW *= Polynomial(-1.0 * _nodes[_nodes.size - 2], 1.0)
+        _valueOfW = _valueOfW.times(Polynomial(-1.0 * _nodes[_nodes.size - 2], 1.0))
         
         _coeffs = (Polynomial(*_coeffs.toDoubleArray()) + (_valueOfW * getDividedDifference(_nodes.size - 1)))
             .coeffs
@@ -18,15 +18,17 @@ class Newton constructor(nodesAndFunValuePairs: MutableMap<Double, Double>): Pol
     fun removeNode(index: Int) {
         _nodes.removeAt(index)
         _funValues.removeAt(index)
+        _nodes.forEach { v -> _valueOfW }
         if (_nodes.isNotEmpty()) {
-            _coeffs = Newton(mutableMapOf(*_nodes.mapIndexed { i, v -> Pair(v, _funValues[i]) }.toTypedArray()))
-                ._coeffs
+            val newPolynomial = Newton(mutableMapOf(*_nodes.mapIndexed { i, v -> Pair(v, _funValues[i]) }.toTypedArray()))
+            _coeffs = newPolynomial._coeffs
+            _valueOfW = newPolynomial._valueOfW
         }
     }
 
     private val _nodes: ArrayList<Double> = ArrayList(nodesAndFunValuePairs.size)
     private val _funValues: ArrayList<Double> = ArrayList(nodesAndFunValuePairs.size)
-    private val _valueOfW: Polynomial = Polynomial(1.0)
+    private var _valueOfW: Polynomial = Polynomial(1.0)
 
     init {
         var i = 0
@@ -39,7 +41,7 @@ class Newton constructor(nodesAndFunValuePairs: MutableMap<Double, Double>): Pol
         val newton = Polynomial()
         newton += _valueOfW * getDividedDifference(0)
         for (j in 1 until _nodes.size) {
-            _valueOfW *= Polynomial(-1.0 * _nodes[j - 1], 1.0)
+            _valueOfW = _valueOfW.times(Polynomial(-1.0 * _nodes[j - 1], 1.0))
             newton += _valueOfW * getDividedDifference(j)
         }
         

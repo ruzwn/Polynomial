@@ -124,7 +124,7 @@ class MainWindow : JFrame() {
 
                     if (funcPainter == null) {
                         val p = Newton(mutableMapOf(Pair(xCrt, yCrt)))
-                        funcPainter = FunctionPainter(crtPlane, p, Color.GREEN)
+                        funcPainter = FunctionPainter(crtPlane, p, Color.GREEN, Color.BLUE)
                         graphicsPanel.addPainter(funcPainter!!)
                     }
                     else {
@@ -132,6 +132,8 @@ class MainWindow : JFrame() {
                             xCrt,
                             yCrt
                         )
+                        
+                        println(funcPainter!!.polynomial)
                     }
                 }
 
