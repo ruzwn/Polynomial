@@ -90,12 +90,18 @@ class MainWindow : JFrame() {
 
         var funcPainter: FunctionPainter? = null
         
+        // To simplify removing points from polynomial
+        val xOnScreen = mutableListOf<Int>()
+        
         graphicsPanel.addMouseListener(object : MouseAdapter() {
             override fun mouseClicked(e: MouseEvent?) {
                 if (e == null) {
                     return
                 }
 
+                val xCrt = CrtConverter.xFromScrToCrt(e.x, crtPlane)
+                val yCrt = CrtConverter.yFromScrToCrt(e.y, crtPlane)
+                
                 if (e.button == MouseEvent.BUTTON1) {
                     val points = pointPainter.points
                     if (points.any { p ->
@@ -103,9 +109,9 @@ class MainWindow : JFrame() {
                         }) {
                         return
                     }
-
-                    val xCrt = CrtConverter.xFromScrToCrt(e.x, crtPlane)
-                    val yCrt = CrtConverter.yFromScrToCrt(e.y, crtPlane)
+                    
+                    xOnScreen.add(e.x)
+                    
                     pointPainter.addPoint(
                         Point(
                             e.x,
@@ -134,11 +140,22 @@ class MainWindow : JFrame() {
                         Point(
                             e.x,
                             e.y,
-                            CrtConverter.xFromScrToCrt(e.x, crtPlane),
-                            CrtConverter.yFromScrToCrt(e.y, crtPlane),
+                            xCrt,
+                            yCrt,
                             pointRadiusInPixels
                         )
                     )
+                    
+                    val x: Int? = xOnScreen.find { x -> abs(x - e.x) < pointRadiusInPixels }
+                    if (x != null) {
+                        val index = xOnScreen.indexOf(x)
+                        xOnScreen.removeAt(index)
+                        funcPainter?.polynomial?.removeNode(index)
+                        if (xOnScreen.isEmpty()) {
+                            funcPainter?.let { graphicsPanel.removePainter(it) }
+                            funcPainter = null
+                        }
+                    }
                 }
 
                 graphicsPanel.repaint()

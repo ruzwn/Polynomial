@@ -14,6 +14,15 @@ class Newton constructor(nodesAndFunValuePairs: MutableMap<Double, Double>): Pol
             .coeffs
             .toMutableList()
     }
+    
+    fun removeNode(index: Int) {
+        _nodes.removeAt(index)
+        _funValues.removeAt(index)
+        if (_nodes.isNotEmpty()) {
+            _coeffs = Newton(mutableMapOf(*_nodes.mapIndexed { i, v -> Pair(v, _funValues[i]) }.toTypedArray()))
+                ._coeffs
+        }
+    }
 
     private val _nodes: ArrayList<Double> = ArrayList(nodesAndFunValuePairs.size)
     private val _funValues: ArrayList<Double> = ArrayList(nodesAndFunValuePairs.size)
