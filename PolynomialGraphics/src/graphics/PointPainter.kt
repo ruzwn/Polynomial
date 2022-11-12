@@ -9,7 +9,7 @@ class PointPainter(
     val plane: CrtPlaneOnScreen, 
     val diameterInPixels: Int, 
     val color: Color
-): Painter {
+    ): Painter {
     private val _points: MutableCollection<Point> = MutableList(0) { 
         Point(0, 0, 0.0, 0.0, diameterInPixels / 2) 
     }

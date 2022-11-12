@@ -1,14 +1,29 @@
 package math.polynomial
 
 class Newton constructor(nodesAndFunValuePairs: MutableMap<Double, Double>): Polynomial() {
-    fun addNode(node: Double, funVal: Double): Polynomial {
+    fun addNode(node: Double, funVal: Double) {
         if (_nodes.contains(node)) {
             throw Exception("Can't add existing node")
         }
+        
         _nodes.add(node)
         _funValues.add(funVal)
         _valueOfW *= Polynomial(-1.0 * _nodes[_nodes.size - 2], 1.0)
-        return Polynomial(*_coeffs.toDoubleArray()) + (_valueOfW * getDividedDifference(_nodes.size - 1))
+        
+        _coeffs = (Polynomial(*_coeffs.toDoubleArray()) + (_valueOfW * getDividedDifference(_nodes.size - 1)))
+            .coeffs
+            .toMutableList()
+
+//        return Polynomial(*_coeffs.toDoubleArray()) + (_valueOfW * getDividedDifference(_nodes.size - 1))
+        
+//        val newNodeAndFunValuePairs = HashMap<Double, Double>()
+//        for (i in 0 until  _nodes.size) {
+//            newNodeAndFunValuePairs[_nodes[i]] = _funValues[i]
+//        }
+//        
+//        newNodeAndFunValuePairs[node] = funVal
+//        
+//        return Newton(newNodeAndFunValuePairs)
     }
 
     private val _nodes: ArrayList<Double> = ArrayList(nodesAndFunValuePairs.size)
@@ -29,6 +44,7 @@ class Newton constructor(nodesAndFunValuePairs: MutableMap<Double, Double>): Pol
             _valueOfW *= Polynomial(-1.0 * _nodes[j - 1], 1.0)
             newton += _valueOfW * getDividedDifference(j)
         }
+        
         _coeffs = newton.coeffs.toMutableList()
     }
 
@@ -37,6 +53,7 @@ class Newton constructor(nodesAndFunValuePairs: MutableMap<Double, Double>): Pol
         if (end == 0) {
             return _funValues[0]
         }
+        
         for (i in 0 ..end) {
             var nodesProduct = 1.0
             for (j in 0 .. end) {
@@ -47,6 +64,7 @@ class Newton constructor(nodesAndFunValuePairs: MutableMap<Double, Double>): Pol
             }
             dividedDiff += _funValues[i] * nodesProduct
         }
+        
         return dividedDiff
     }
 }
