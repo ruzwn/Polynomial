@@ -91,7 +91,7 @@ class MainWindow : JFrame() {
         var funcPainter: FunctionPainter? = null
         
         // To simplify removing points from polynomial
-        val xOnScreen = mutableListOf<Int>()
+        val pointsOnScreen = mutableListOf<Pair<Int, Int>>()
         
         graphicsPanel.addMouseListener(object : MouseAdapter() {
             override fun mouseClicked(e: MouseEvent?) {
@@ -110,7 +110,7 @@ class MainWindow : JFrame() {
                         return
                     }
                     
-                    xOnScreen.add(e.x)
+                    pointsOnScreen.add(Pair(e.x, e.y))
                     
                     pointPainter.addPoint(
                         Point(
@@ -146,12 +146,14 @@ class MainWindow : JFrame() {
                         )
                     )
                     
-                    val x: Int? = xOnScreen.find { x -> abs(x - e.x) < pointRadiusInPixels }
-                    if (x != null) {
-                        val index = xOnScreen.indexOf(x)
-                        xOnScreen.removeAt(index)
+                    val point = pointsOnScreen.find { p ->
+                        abs(p.first - e.x) <= pointRadiusInPixels && abs(p.second - e.y) <= pointRadiusInPixels
+                    }
+                    if (point != null) {
+                        val index = pointsOnScreen.indexOf(point)
+                        pointsOnScreen.removeAt(index)
                         funcPainter?.polynomial?.removeNode(index)
-                        if (xOnScreen.isEmpty()) {
+                        if (pointsOnScreen.isEmpty()) {
                             funcPainter?.let { graphicsPanel.removePainter(it) }
                             funcPainter = null
                         }
