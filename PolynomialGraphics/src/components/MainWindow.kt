@@ -7,13 +7,19 @@ import java.awt.Color
 import java.awt.Dimension
 import java.awt.event.*
 import javax.swing.GroupLayout
+import javax.swing.JButton
+import javax.swing.JColorChooser
 import javax.swing.JFrame
 import kotlin.math.abs
+
 
 class MainWindow : JFrame() {
     private val minSize = Dimension(550, 400)
     private val graphicsPanel: GraphicsPanel
     private val controlPanel: ControlPanel
+    private val colorPaletteForPoints: JColorChooser
+    private val colorPaletteForFunction: JColorChooser
+    private val colorPaletteForDerivative: JColorChooser
     private val pointRadiusInPixels: Int = 5
     private val pointColor: Color = Color.RED
     
@@ -23,6 +29,22 @@ class MainWindow : JFrame() {
         graphicsPanel = GraphicsPanel()
         graphicsPanel.background = Color.WHITE
         controlPanel = ControlPanel()
+        
+        colorPaletteForPoints = JColorChooser()
+        colorPaletteForFunction = JColorChooser()
+        colorPaletteForDerivative = JColorChooser()
+        val button = JButton("Choose color")
+        button.addActionListener {
+            colorPaletteForPoints.setBounds(button.x, button.y + 20, 600, 300)
+            colorPaletteForPoints.isVisible = true
+            contentPane.add(colorPaletteForPoints)
+            contentPane.validate()
+            contentPane.repaint()
+        }
+        button.setBounds(10, 11, 150, 23)
+        contentPane.add(button)
+
+
         val gl = GroupLayout(contentPane)
 
         gl.setVerticalGroup(
@@ -30,13 +52,49 @@ class MainWindow : JFrame() {
                 .addGap(4)
                 .addComponent(graphicsPanel, minSize.height, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE)
                 .addGap(4)
-                .addComponent(
-                    controlPanel,
-                    GroupLayout.PREFERRED_SIZE,
-                    GroupLayout.PREFERRED_SIZE,
-                    GroupLayout.PREFERRED_SIZE
+//                .addComponent(
+//                    controlPanel,
+//                    GroupLayout.PREFERRED_SIZE,
+//                    GroupLayout.PREFERRED_SIZE,
+//                    GroupLayout.PREFERRED_SIZE
+//                )
+                .addGroup(
+                    gl.createParallelGroup()
+                        .addComponent(
+                            controlPanel,
+                            GroupLayout.PREFERRED_SIZE,
+                            GroupLayout.PREFERRED_SIZE,
+                            GroupLayout.PREFERRED_SIZE
+                        )
+                        .addGap(4)
+                        .addComponent(
+                            button,
+                            GroupLayout.DEFAULT_SIZE,
+                            GroupLayout.DEFAULT_SIZE,
+                            GroupLayout.DEFAULT_SIZE
+                        )
                 )
                 .addGap(4)
+//                .addComponent(
+//                    button,
+//                    GroupLayout.PREFERRED_SIZE,
+//                    GroupLayout.PREFERRED_SIZE,
+//                    GroupLayout.PREFERRED_SIZE
+//                )
+//                .addGap(4)
+//                .addComponent(
+//                    colorPaletteForPoints,
+//                    GroupLayout.PREFERRED_SIZE,
+//                    GroupLayout.PREFERRED_SIZE,
+//                    GroupLayout.PREFERRED_SIZE
+//                )
+//                .addGap(4)
+//                .addComponent(
+//                    colorPaletteForFunction,
+//                    GroupLayout.PREFERRED_SIZE,
+//                    GroupLayout.PREFERRED_SIZE,
+//                    GroupLayout.PREFERRED_SIZE
+//                )
         )
 
         gl.setHorizontalGroup(
@@ -45,12 +103,45 @@ class MainWindow : JFrame() {
                 .addGroup(
                     gl.createParallelGroup()
                         .addComponent(graphicsPanel, minSize.width, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE)
-                        .addComponent(
-                            controlPanel,
-                            GroupLayout.DEFAULT_SIZE,
-                            GroupLayout.DEFAULT_SIZE,
-                            GroupLayout.DEFAULT_SIZE
+                        .addGroup(
+                            gl.createSequentialGroup()
+                                .addComponent(
+                                    controlPanel,
+                                    GroupLayout.DEFAULT_SIZE,
+                                    GroupLayout.DEFAULT_SIZE,
+                                    GroupLayout.DEFAULT_SIZE
+                                )
+                                .addComponent(
+                                    button,
+                                    GroupLayout.DEFAULT_SIZE,
+                                    GroupLayout.DEFAULT_SIZE,
+                                    GroupLayout.DEFAULT_SIZE
+                                )
                         )
+//                        .addComponent(
+//                            controlPanel,
+//                            GroupLayout.DEFAULT_SIZE,
+//                            GroupLayout.DEFAULT_SIZE,
+//                            GroupLayout.DEFAULT_SIZE
+//                        )
+//                        .addComponent(
+//                            button,
+//                            GroupLayout.DEFAULT_SIZE,
+//                            GroupLayout.DEFAULT_SIZE,
+//                            GroupLayout.DEFAULT_SIZE
+//                        )
+//                        .addComponent(
+//                            colorPaletteForPoints,
+//                            GroupLayout.DEFAULT_SIZE,
+//                            GroupLayout.DEFAULT_SIZE,
+//                            GroupLayout.DEFAULT_SIZE
+//                        )
+//                        .addComponent(
+//                            colorPaletteForFunction,
+//                            GroupLayout.DEFAULT_SIZE,
+//                            GroupLayout.DEFAULT_SIZE,
+//                            GroupLayout.DEFAULT_SIZE
+//                        )
                 )
                 .addGap(4)
         )
@@ -132,8 +223,6 @@ class MainWindow : JFrame() {
                             xCrt,
                             yCrt
                         )
-                        
-                        println(funcPainter!!.polynomial)
                     }
                 }
 
