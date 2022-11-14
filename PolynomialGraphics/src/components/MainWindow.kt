@@ -6,149 +6,36 @@ import math.polynomial.Point
 import java.awt.Color
 import java.awt.Dimension
 import java.awt.event.*
-import javax.swing.GroupLayout
-import javax.swing.JButton
-import javax.swing.JColorChooser
-import javax.swing.JFrame
+import javax.swing.*
 import kotlin.math.abs
 
 
 class MainWindow : JFrame() {
     private val minSize = Dimension(550, 400)
+    private val pointDefaultRadiusInPixels: Int = 5
+    private val pointDefaultColor: Color = Color.RED
+    private val functionDefaultColor: Color = Color.GREEN
+    private val derivativeDefaultColor: Color = Color.BLUE
+    
     private val graphicsPanel: GraphicsPanel
     private val controlPanel: ControlPanel
-    private val colorPaletteForPoints: JColorChooser
-    private val colorPaletteForFunction: JColorChooser
-    private val colorPaletteForDerivative: JColorChooser
-    private val pointRadiusInPixels: Int = 5
-    private val pointColor: Color = Color.RED
+    
+    private val pnlColorForPoints: JPanel
+    private val pnlColorForFunction: JPanel
+    private val pnlColorForDerivative: JPanel
+    
+    private val crtPainter: CartesianPainter
+    private val pointPainter: PointPainter
+    private var funcPainter: FunctionPainter
     
     init {
         defaultCloseOperation = EXIT_ON_CLOSE
         minimumSize = Dimension(minSize.width + 200, minSize.height + 400)
+        
         graphicsPanel = GraphicsPanel()
         graphicsPanel.background = Color.WHITE
-        controlPanel = ControlPanel()
         
-        colorPaletteForPoints = JColorChooser()
-        colorPaletteForFunction = JColorChooser()
-        colorPaletteForDerivative = JColorChooser()
-        val button = JButton("Choose color")
-        button.addActionListener {
-            colorPaletteForPoints.setBounds(button.x, button.y + 20, 600, 300)
-            colorPaletteForPoints.isVisible = true
-            contentPane.add(colorPaletteForPoints)
-            contentPane.validate()
-            contentPane.repaint()
-        }
-        button.setBounds(10, 11, 150, 23)
-        contentPane.add(button)
-
-
-        val gl = GroupLayout(contentPane)
-
-        gl.setVerticalGroup(
-            gl.createSequentialGroup()
-                .addGap(4)
-                .addComponent(graphicsPanel, minSize.height, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE)
-                .addGap(4)
-//                .addComponent(
-//                    controlPanel,
-//                    GroupLayout.PREFERRED_SIZE,
-//                    GroupLayout.PREFERRED_SIZE,
-//                    GroupLayout.PREFERRED_SIZE
-//                )
-                .addGroup(
-                    gl.createParallelGroup()
-                        .addComponent(
-                            controlPanel,
-                            GroupLayout.PREFERRED_SIZE,
-                            GroupLayout.PREFERRED_SIZE,
-                            GroupLayout.PREFERRED_SIZE
-                        )
-                        .addGap(4)
-                        .addComponent(
-                            button,
-                            GroupLayout.DEFAULT_SIZE,
-                            GroupLayout.DEFAULT_SIZE,
-                            GroupLayout.DEFAULT_SIZE
-                        )
-                )
-                .addGap(4)
-//                .addComponent(
-//                    button,
-//                    GroupLayout.PREFERRED_SIZE,
-//                    GroupLayout.PREFERRED_SIZE,
-//                    GroupLayout.PREFERRED_SIZE
-//                )
-//                .addGap(4)
-//                .addComponent(
-//                    colorPaletteForPoints,
-//                    GroupLayout.PREFERRED_SIZE,
-//                    GroupLayout.PREFERRED_SIZE,
-//                    GroupLayout.PREFERRED_SIZE
-//                )
-//                .addGap(4)
-//                .addComponent(
-//                    colorPaletteForFunction,
-//                    GroupLayout.PREFERRED_SIZE,
-//                    GroupLayout.PREFERRED_SIZE,
-//                    GroupLayout.PREFERRED_SIZE
-//                )
-        )
-
-        gl.setHorizontalGroup(
-            gl.createSequentialGroup()
-                .addGap(4)
-                .addGroup(
-                    gl.createParallelGroup()
-                        .addComponent(graphicsPanel, minSize.width, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE)
-                        .addGroup(
-                            gl.createSequentialGroup()
-                                .addComponent(
-                                    controlPanel,
-                                    GroupLayout.DEFAULT_SIZE,
-                                    GroupLayout.DEFAULT_SIZE,
-                                    GroupLayout.DEFAULT_SIZE
-                                )
-                                .addComponent(
-                                    button,
-                                    GroupLayout.DEFAULT_SIZE,
-                                    GroupLayout.DEFAULT_SIZE,
-                                    GroupLayout.DEFAULT_SIZE
-                                )
-                        )
-//                        .addComponent(
-//                            controlPanel,
-//                            GroupLayout.DEFAULT_SIZE,
-//                            GroupLayout.DEFAULT_SIZE,
-//                            GroupLayout.DEFAULT_SIZE
-//                        )
-//                        .addComponent(
-//                            button,
-//                            GroupLayout.DEFAULT_SIZE,
-//                            GroupLayout.DEFAULT_SIZE,
-//                            GroupLayout.DEFAULT_SIZE
-//                        )
-//                        .addComponent(
-//                            colorPaletteForPoints,
-//                            GroupLayout.DEFAULT_SIZE,
-//                            GroupLayout.DEFAULT_SIZE,
-//                            GroupLayout.DEFAULT_SIZE
-//                        )
-//                        .addComponent(
-//                            colorPaletteForFunction,
-//                            GroupLayout.DEFAULT_SIZE,
-//                            GroupLayout.DEFAULT_SIZE,
-//                            GroupLayout.DEFAULT_SIZE
-//                        )
-                )
-                .addGap(4)
-        )
-
-        layout = gl
-
-        pack()
+        controlPanel = ControlPanel()
 
         val crtPlane = CrtPlaneOnScreen(
             graphicsPanel.width, graphicsPanel.height,
@@ -157,15 +44,61 @@ class MainWindow : JFrame() {
             controlPanel.smYMin.number.toDouble(),
             controlPanel.smYMax.number.toDouble()
         )
-        val crtPainter = CartesianPainter(crtPlane)
 
-        graphicsPanel.addComponentListener(object : ComponentAdapter() {
-            override fun componentResized(e: ComponentEvent?) {
-                crtPainter.plane.realWidth = graphicsPanel.width
-                crtPainter.plane.realHeight = graphicsPanel.height
+        crtPainter = CartesianPainter(crtPlane)
+        pointPainter = PointPainter(crtPlane, 2 * pointDefaultRadiusInPixels, pointDefaultColor)
+        funcPainter = FunctionPainter(crtPlane, null, functionDefaultColor, derivativeDefaultColor)
+        
+        pnlColorForPoints = JPanel()
+        pnlColorForPoints.background = pointDefaultColor
+        pnlColorForPoints.addMouseListener(object : MouseAdapter(){
+            override fun mouseClicked(e: MouseEvent?) {
+                JColorChooser.showDialog(
+                    this@MainWindow,
+                    "Выбор цвета точек",
+                    pnlColorForPoints.background
+                )?.let{
+                    pnlColorForPoints.background = it
+                    pointPainter.color = it
+                    graphicsPanel.repaint()
+                }
             }
         })
+        pnlColorForFunction = JPanel()
+        pnlColorForFunction.background = functionDefaultColor
+        pnlColorForFunction.addMouseListener(object : MouseAdapter(){
+            override fun mouseClicked(e: MouseEvent?) {
+                JColorChooser.showDialog(
+                    this@MainWindow,
+                    "Выбор цвета функции",
+                    pnlColorForFunction.background
+                )?.let { 
+                    pnlColorForFunction.background = it
+                    funcPainter.polynomialColor = it
+                    graphicsPanel.repaint()
+                }
+            }
+        })
+        pnlColorForDerivative = JPanel()
+        pnlColorForDerivative.background = derivativeDefaultColor
+        pnlColorForDerivative.addMouseListener(object : MouseAdapter(){
+            override fun mouseClicked(e: MouseEvent?) {
+                JColorChooser.showDialog(
+                    this@MainWindow,
+                    "Выбор цвета производной",
+                    pnlColorForDerivative.background
+                )?.let {
+                    pnlColorForDerivative.background = it
+                    funcPainter.derivativeColor = it
+                    graphicsPanel.repaint()
+                }
+            }
+        })
+        
+        
+        // Add components and their listeners to GraphicsPanel and ControlPanel
 
+        
         controlPanel.addValChangeListener {
             crtPainter.plane.xMin = controlPanel.smXMin.number.toDouble()
             crtPainter.plane.xMax = controlPanel.smXMax.number.toDouble()
@@ -175,15 +108,18 @@ class MainWindow : JFrame() {
         }
 
         graphicsPanel.addPainter(crtPainter)
-        
-        val pointPainter = PointPainter(crtPlane, 2 * pointRadiusInPixels, pointColor)
         graphicsPanel.addPainter(pointPainter)
+        graphicsPanel.addPainter(funcPainter)
 
-        var funcPainter: FunctionPainter? = null
+        graphicsPanel.addComponentListener(object : ComponentAdapter() {
+            override fun componentResized(e: ComponentEvent?) {
+                crtPainter.plane.realWidth = graphicsPanel.width
+                crtPainter.plane.realHeight = graphicsPanel.height
+            }
+        })
         
         // To simplify removing points from polynomial
         val pointsOnScreen = mutableListOf<Pair<Int, Int>>()
-        
         graphicsPanel.addMouseListener(object : MouseAdapter() {
             override fun mouseClicked(e: MouseEvent?) {
                 if (e == null) {
@@ -209,20 +145,15 @@ class MainWindow : JFrame() {
                             e.y,
                             xCrt,
                             yCrt,
-                            pointRadiusInPixels
+                            pointDefaultRadiusInPixels
                         )
                     )
 
-                    if (funcPainter == null) {
-                        val p = Newton(mutableMapOf(Pair(xCrt, yCrt)))
-                        funcPainter = FunctionPainter(crtPlane, p, Color.GREEN, Color.BLUE)
-                        graphicsPanel.addPainter(funcPainter!!)
+                    if (funcPainter.polynomial == null) {
+                        funcPainter.polynomial = Newton(mutableMapOf(Pair(xCrt, yCrt)))
                     }
                     else {
-                        funcPainter!!.polynomial.addNode(
-                            xCrt,
-                            yCrt
-                        )
+                        funcPainter.polynomial!!.addNode(xCrt, yCrt)
                     }
                 }
 
@@ -233,26 +164,78 @@ class MainWindow : JFrame() {
                             e.y,
                             xCrt,
                             yCrt,
-                            pointRadiusInPixels
+                            pointDefaultRadiusInPixels
                         )
                     )
                     
                     val point = pointsOnScreen.find { p ->
-                        abs(p.first - e.x) <= pointRadiusInPixels && abs(p.second - e.y) <= pointRadiusInPixels
+                        abs(p.first - e.x) <= pointDefaultRadiusInPixels && abs(p.second - e.y) <= pointDefaultRadiusInPixels
                     }
                     if (point != null) {
                         val index = pointsOnScreen.indexOf(point)
                         pointsOnScreen.removeAt(index)
-                        funcPainter?.polynomial?.removeNode(index)
-                        if (pointsOnScreen.isEmpty()) {
-                            funcPainter?.let { graphicsPanel.removePainter(it) }
-                            funcPainter = null
-                        }
+                        funcPainter.polynomial?.removeNode(index)
                     }
                 }
 
                 graphicsPanel.repaint()
             }
         })
+
+        
+        // Initializing layout of the main window
+        
+        
+        val gl = GroupLayout(contentPane)
+        gl.setVerticalGroup(
+            gl.createSequentialGroup()
+                .addGap(4)
+                .addComponent(graphicsPanel, minSize.height, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE)
+                .addGap(4)
+                .addGroup(
+                    gl.createParallelGroup()
+                        .addComponent(
+                            controlPanel,
+                            GroupLayout.PREFERRED_SIZE,
+                            GroupLayout.PREFERRED_SIZE,
+                            GroupLayout.PREFERRED_SIZE
+                        )
+                        .addGap(4)
+                        .addComponent(pnlColorForPoints, 20, 20, 20)
+                        .addGap(4)
+                        .addComponent(pnlColorForFunction, 20, 20, 20)
+                        .addGap(4)
+                        .addComponent(pnlColorForDerivative, 20, 20, 20)
+                        .addGap(4)
+                )
+                .addGap(4)
+        )
+        gl.setHorizontalGroup(
+            gl.createSequentialGroup()
+                .addGap(4)
+                .addGroup(
+                    gl.createParallelGroup()
+                        .addComponent(graphicsPanel, minSize.width, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE)
+                        .addGroup(
+                            gl.createSequentialGroup()
+                                .addComponent(
+                                    controlPanel,
+                                    GroupLayout.DEFAULT_SIZE,
+                                    GroupLayout.DEFAULT_SIZE,
+                                    GroupLayout.DEFAULT_SIZE
+                                )
+                                .addGap(4)
+                                .addComponent(pnlColorForPoints, 20, 20, 20)
+                                .addGap(4)
+                                .addComponent(pnlColorForFunction, 20, 20, 20)
+                                .addGap(4)
+                                .addComponent(pnlColorForDerivative, 20, 20, 20)
+                                .addGap(4)
+                        )
+                )
+                .addGap(4)
+        )
+        layout = gl
+        pack()
     }
 }

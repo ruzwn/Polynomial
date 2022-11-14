@@ -6,13 +6,17 @@ import java.awt.Graphics
 
 class FunctionPainter(
     val plane: CrtPlaneOnScreen, 
-    val polynomial: Newton,
-    val polynomialColor: Color,
-    val derivativeColor: Color
+    var polynomial: Newton?,
+    var polynomialColor: Color,
+    var derivativeColor: Color
     ): Painter {
     
     override fun paint(gr: Graphics?) {
         if (gr == null) {
+            return
+        }
+        
+        if (polynomial == null) {
             return
         }
 
@@ -21,12 +25,14 @@ class FunctionPainter(
         for (i in 0..plane.realWidth) {
             val x1Scr = i
             val x1Crt = CrtConverter.xFromScrToCrt(x1Scr, plane)
-            val y1Crt = polynomial(x1Crt)
+            // Not thread-safe because of not null assertion
+            // (during the execution of the loop, the property may become null in another thread) ?
+            val y1Crt = polynomial!!(x1Crt)
             val y1Scr = CrtConverter.yFromCrtToScr(y1Crt, plane)
             
             val x2Scr = i + 1
             val x2Crt = CrtConverter.xFromScrToCrt(x2Scr, plane)
-            val y2Crt = polynomial(x2Crt)
+            val y2Crt = polynomial!!(x2Crt)
             val y2Scr = CrtConverter.yFromCrtToScr(y2Crt, plane)
             
             gr.drawLine(x1Scr, y1Scr, x2Scr, y2Scr)
@@ -35,7 +41,7 @@ class FunctionPainter(
         gr.color = prevColor
         
         // Print derivative
-        val derivative = polynomial.getDerivative()
+        val derivative = polynomial!!.getDerivative()
         prevColor = gr.color
         gr.color = derivativeColor
         for (i in 0..plane.realWidth) {

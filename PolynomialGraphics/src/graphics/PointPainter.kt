@@ -8,7 +8,7 @@ import java.awt.Graphics
 class PointPainter(
     val plane: CrtPlaneOnScreen, 
     val diameterInPixels: Int, 
-    val color: Color
+    var color: Color
     ): Painter {
     private val _points: MutableCollection<Point> = MutableList(0) { 
         Point(0, 0, 0.0, 0.0, diameterInPixels / 2) 
