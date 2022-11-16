@@ -3,12 +3,14 @@ package graphics
 import math.polynomial.Point
 import java.awt.Color
 import java.awt.Graphics
+import java.time.temporal.IsoFields
 
 // todo: изменить тип _points?
 class PointPainter(
     val plane: CrtPlaneOnScreen, 
     val diameterInPixels: Int, 
-    var color: Color
+    var color: Color,
+    var isPaint: Boolean = true
     ): Painter {
     private val _points: MutableCollection<Point> = MutableList(0) { 
         Point(0, 0, 0.0, 0.0, diameterInPixels / 2) 
@@ -17,6 +19,10 @@ class PointPainter(
             get() = mutableListOf(*_points.toTypedArray())
     
     override fun paint(gr: Graphics?) {
+        if (!isPaint) {
+            return
+        }
+        
         if (gr == null) {
             return
         }

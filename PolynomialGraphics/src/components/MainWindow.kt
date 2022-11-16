@@ -5,7 +5,10 @@ import math.polynomial.Newton
 import math.polynomial.Point
 import java.awt.Color
 import java.awt.Dimension
-import java.awt.event.*
+import java.awt.event.ComponentAdapter
+import java.awt.event.ComponentEvent
+import java.awt.event.MouseAdapter
+import java.awt.event.MouseEvent
 import javax.swing.*
 import kotlin.math.abs
 
@@ -21,6 +24,10 @@ class MainWindow : JFrame() {
     private val functionColorChooserLabel = JLabel("Цвет функции")
     private val derivativeColorChooserLabel = JLabel("Цвет производной")
     
+    private val pointsIsPaintCheckBox = JCheckBox("Отобразить точки")
+    private val functionIsPaintCheckBox = JCheckBox("Отобразить функцию")
+    private val derivativeIsPaintCheckBox = JCheckBox("Отобразить производную")
+    
     private val graphicsPanel: GraphicsPanel
     private val controlPanel: ControlPanel
     
@@ -30,7 +37,7 @@ class MainWindow : JFrame() {
     
     private val crtPainter: CartesianPainter
     private val pointPainter: PointPainter
-    private var funcPainter: FunctionPainter
+    private val funcPainter: FunctionPainter
     
     init {
         defaultCloseOperation = EXIT_ON_CLOSE
@@ -99,6 +106,18 @@ class MainWindow : JFrame() {
             }
         })
         
+        pointsIsPaintCheckBox.addChangeListener {
+            pointPainter.isPaint = !pointPainter.isPaint
+            graphicsPanel.repaint()
+        }
+        functionIsPaintCheckBox.addChangeListener {
+            funcPainter.isPaintFunction = !funcPainter.isPaintFunction
+            graphicsPanel.repaint()
+        }
+        derivativeIsPaintCheckBox.addChangeListener {
+            funcPainter.isPaintDerivative = !funcPainter.isPaintDerivative
+            graphicsPanel.repaint()
+        }
         
         // Add components and their listeners to GraphicsPanel and ControlPanel
 
@@ -223,6 +242,12 @@ class MainWindow : JFrame() {
                         )
 //                        .addComponent(pnlColorForDerivative, 20, 20, 20)
                         .addGap(4)
+                        .addComponent(pointsIsPaintCheckBox, 50, 50, 100)
+                        .addGap(4)
+                        .addComponent(functionIsPaintCheckBox, 50, 50, 100)
+                        .addGap(4)
+                        .addComponent(derivativeIsPaintCheckBox, 50, 50, 100)
+                        .addGap(4)
                 )
                 .addGap(4)
         )
@@ -258,6 +283,12 @@ class MainWindow : JFrame() {
                                     .addComponent(pnlColorForDerivative, 20, 20, 20)
                                 )
 //                                .addComponent(pnlColorForDerivative, 20, 20, 20)
+                                .addGap(4)
+                                .addComponent(pointsIsPaintCheckBox, 50, 50, 100)
+                                .addGap(4)
+                                .addComponent(functionIsPaintCheckBox, 50, 50, 100)
+                                .addGap(4)
+                                .addComponent(derivativeIsPaintCheckBox, 50, 50, 100)
                                 .addGap(4)
                         )
                 )
