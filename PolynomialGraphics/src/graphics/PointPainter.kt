@@ -3,7 +3,6 @@ package graphics
 import math.polynomial.Point
 import java.awt.Color
 import java.awt.Graphics
-import java.time.temporal.IsoFields
 
 // todo: изменить тип _points?
 class PointPainter(

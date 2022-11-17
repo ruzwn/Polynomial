@@ -24,9 +24,9 @@ class MainWindow : JFrame() {
     private val functionColorChooserLabel = JLabel("Цвет функции")
     private val derivativeColorChooserLabel = JLabel("Цвет производной")
     
-    private val pointsIsPaintCheckBox = JCheckBox("Отобразить точки")
-    private val functionIsPaintCheckBox = JCheckBox("Отобразить функцию")
-    private val derivativeIsPaintCheckBox = JCheckBox("Отобразить производную")
+    private val pointsIsPaintCheckBox = JCheckBox("Скрыть точки")
+    private val functionIsPaintCheckBox = JCheckBox("Скрыть функцию")
+    private val derivativeIsPaintCheckBox = JCheckBox("Скрыть производную")
     
     private val graphicsPanel: GraphicsPanel
     private val controlPanel: ControlPanel
@@ -38,7 +38,8 @@ class MainWindow : JFrame() {
     private val crtPainter: CartesianPainter
     private val pointPainter: PointPainter
     private val funcPainter: FunctionPainter
-    
+    private val derivativePainter: FunctionPainter
+    private var polynomial: Newton? = null
     init {
         defaultCloseOperation = EXIT_ON_CLOSE
         minimumSize = Dimension(minSize.width + 200, minSize.height + 400)
@@ -58,7 +59,8 @@ class MainWindow : JFrame() {
 
         crtPainter = CartesianPainter(crtPlane)
         pointPainter = PointPainter(crtPlane, 2 * pointDefaultRadiusInPixels, pointDefaultColor)
-        funcPainter = FunctionPainter(crtPlane, null, functionDefaultColor, derivativeDefaultColor)
+        funcPainter = FunctionPainter(crtPlane, null, functionDefaultColor)
+        derivativePainter = FunctionPainter(crtPlane, null, derivativeDefaultColor)
         
         pnlColorForPoints = JPanel()
         pnlColorForPoints.background = pointDefaultColor
@@ -85,7 +87,7 @@ class MainWindow : JFrame() {
                     pnlColorForFunction.background
                 )?.let { 
                     pnlColorForFunction.background = it
-                    funcPainter.polynomialColor = it
+                    funcPainter.color = it
                     graphicsPanel.repaint()
                 }
             }
@@ -100,7 +102,7 @@ class MainWindow : JFrame() {
                     pnlColorForDerivative.background
                 )?.let {
                     pnlColorForDerivative.background = it
-                    funcPainter.derivativeColor = it
+                    derivativePainter.color = it
                     graphicsPanel.repaint()
                 }
             }
@@ -111,13 +113,14 @@ class MainWindow : JFrame() {
             graphicsPanel.repaint()
         }
         functionIsPaintCheckBox.addChangeListener {
-            funcPainter.isPaintFunction = !funcPainter.isPaintFunction
+            funcPainter.isPaint = !funcPainter.isPaint
             graphicsPanel.repaint()
         }
         derivativeIsPaintCheckBox.addChangeListener {
-            funcPainter.isPaintDerivative = !funcPainter.isPaintDerivative
+            derivativePainter.isPaint = !derivativePainter.isPaint
             graphicsPanel.repaint()
         }
+        
         
         // Add components and their listeners to GraphicsPanel and ControlPanel
 
@@ -133,6 +136,7 @@ class MainWindow : JFrame() {
         graphicsPanel.addPainter(crtPainter)
         graphicsPanel.addPainter(pointPainter)
         graphicsPanel.addPainter(funcPainter)
+        graphicsPanel.addPainter(derivativePainter)
 
         graphicsPanel.addComponentListener(object : ComponentAdapter() {
             override fun componentResized(e: ComponentEvent?) {
@@ -142,6 +146,7 @@ class MainWindow : JFrame() {
         })
         
         // To simplify removing points from polynomial
+        
         val pointsOnScreen = mutableListOf<Pair<Int, Int>>()
         graphicsPanel.addMouseListener(object : MouseAdapter() {
             override fun mouseClicked(e: MouseEvent?) {
@@ -172,11 +177,13 @@ class MainWindow : JFrame() {
                         )
                     )
 
-                    if (funcPainter.polynomial == null) {
-                        funcPainter.polynomial = Newton(mutableMapOf(Pair(xCrt, yCrt)))
+                    if (funcPainter.function == null) {
+                        polynomial = Newton(mutableMapOf(Pair(xCrt, yCrt)))
+                        funcPainter.function = polynomial?.let { it::invoke }//{ x -> polynomial?.invoke(x) ?: 0.0 }
+                        derivativePainter.function = { x -> polynomial?.getDerivative()?.invoke(x) ?: 0.0}
                     }
                     else {
-                        funcPainter.polynomial!!.addNode(xCrt, yCrt)
+                        polynomial?.addNode(xCrt, yCrt)
                     }
                 }
 
@@ -197,7 +204,12 @@ class MainWindow : JFrame() {
                     if (point != null) {
                         val index = pointsOnScreen.indexOf(point)
                         pointsOnScreen.removeAt(index)
-                        funcPainter.polynomial?.removeNode(index)
+                        polynomial?.removeNode(index)
+                    }
+                    
+                    if (pointsOnScreen.isEmpty()) {
+                        funcPainter.function = null
+                        derivativePainter.function = null
                     }
                 }
 
@@ -213,41 +225,72 @@ class MainWindow : JFrame() {
         gl.setVerticalGroup(
             gl.createSequentialGroup()
                 .addGap(4)
-                .addComponent(graphicsPanel, minSize.height, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE)
+                .addComponent(graphicsPanel, minSize.height, GROW, GROW)
                 .addGap(4)
                 .addGroup(
                     gl.createParallelGroup()
                         .addComponent(
                             controlPanel,
-                            GroupLayout.PREFERRED_SIZE,
-                            GroupLayout.PREFERRED_SIZE,
-                            GroupLayout.PREFERRED_SIZE
+                            GROW,
+                            GROW,
+                            GROW
                         )
                         .addGap(4)
                         .addGroup(gl.createSequentialGroup()
-                            .addComponent(pointsColorChooserLabel, 50, 50, 100)
+                        .addGroup(gl.createParallelGroup()
+                            .addComponent(
+                                pointsIsPaintCheckBox,
+                                GROW,
+                                GROW,
+                                GROW
+                            )
+                            .addGap(4)
                             .addComponent(pnlColorForPoints, 20, 20, 20)
+                            .addGap(4)
+                            .addComponent(
+                                pointsColorChooserLabel,
+                                SHRINK,
+                                SHRINK,
+                                SHRINK
+                            )
                         )
-//                        .addComponent(pnlColorForPoints, 20, 20, 20)
                         .addGap(4)
-                        .addGroup(gl.createSequentialGroup()
-                            .addComponent(functionColorChooserLabel, 50, 50, 100)
+                        .addGroup(gl.createParallelGroup()
+                            .addComponent(
+                                functionIsPaintCheckBox,
+                                GROW,
+                                GROW,
+                                GROW
+                            )
+                            .addGap(4)
                             .addComponent(pnlColorForFunction, 20, 20, 20)
+                            .addGap(4)
+                            .addComponent(
+                                functionColorChooserLabel,
+                                SHRINK,
+                                SHRINK,
+                                SHRINK
+                            )
                         )
-//                        .addComponent(pnlColorForFunction, 20, 20, 20)
                         .addGap(4)
-                        .addGroup(gl.createSequentialGroup()
-                            .addComponent(derivativeColorChooserLabel, 50, 50, 100)
+                        .addGroup(gl.createParallelGroup()
+                            .addComponent(
+                                derivativeIsPaintCheckBox,
+                                GROW,
+                                GROW,
+                                GROW
+                            )
+                            .addGap(4)
                             .addComponent(pnlColorForDerivative, 20, 20, 20)
+                            .addGap(4)
+                            .addComponent(
+                                derivativeColorChooserLabel,
+                                SHRINK,
+                                SHRINK,
+                                SHRINK
+                            )
                         )
-//                        .addComponent(pnlColorForDerivative, 20, 20, 20)
-                        .addGap(4)
-                        .addComponent(pointsIsPaintCheckBox, 50, 50, 100)
-                        .addGap(4)
-                        .addComponent(functionIsPaintCheckBox, 50, 50, 100)
-                        .addGap(4)
-                        .addComponent(derivativeIsPaintCheckBox, 50, 50, 100)
-                        .addGap(4)
+                        )
                 )
                 .addGap(4)
         )
@@ -256,45 +299,80 @@ class MainWindow : JFrame() {
                 .addGap(4)
                 .addGroup(
                     gl.createParallelGroup()
-                        .addComponent(graphicsPanel, minSize.width, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE)
+                        .addComponent(graphicsPanel, minSize.width, GROW, GROW)
                         .addGroup(
                             gl.createSequentialGroup()
                                 .addComponent(
                                     controlPanel,
-                                    GroupLayout.DEFAULT_SIZE,
-                                    GroupLayout.DEFAULT_SIZE,
-                                    GroupLayout.DEFAULT_SIZE
+                                    GROW,
+                                    GROW,
+                                    GROW
                                 )
                                 .addGap(4)
                                 .addGroup(gl.createParallelGroup()
-                                    .addComponent(pointsColorChooserLabel, 50, 50, 100)
+                                .addGroup(gl.createSequentialGroup()
+                                    .addComponent(
+                                        pointsIsPaintCheckBox,
+                                        GROW,
+                                        GROW,
+                                        GROW
+                                    )
+                                    .addGap(4)
                                     .addComponent(pnlColorForPoints, 20, 20, 20)
+                                    .addGap(4)
+                                    .addComponent(
+                                        pointsColorChooserLabel,
+                                        SHRINK,
+                                        SHRINK,
+                                        SHRINK
+                                    )
                                 )
-//                                .addComponent(pnlColorForPoints, 20, 20, 20)
                                 .addGap(4)
-                                .addGroup(gl.createParallelGroup()
-                                    .addComponent(functionColorChooserLabel, 50, 50, 100)
+                                .addGroup(gl.createSequentialGroup()
+                                    .addComponent(
+                                        functionIsPaintCheckBox,
+                                        GROW,
+                                        GROW,
+                                        GROW
+                                    )
+                                    .addGap(4)
                                     .addComponent(pnlColorForFunction, 20, 20, 20)
+                                    .addGap(4)
+                                    .addComponent(
+                                        functionColorChooserLabel,
+                                        SHRINK,
+                                        SHRINK,
+                                        SHRINK
+                                    )
                                 )
-//                                .addComponent(pnlColorForFunction, 20, 20, 20)
-                                .addGap(4)
-                                .addGroup(gl.createParallelGroup()
-                                    .addComponent(derivativeColorChooserLabel, 50, 50, 100)
+                                .addGroup(gl.createSequentialGroup()
+                                    .addComponent(
+                                        derivativeIsPaintCheckBox,
+                                        GROW,
+                                        GROW,
+                                        GROW
+                                    )
+                                    .addGap(4)
                                     .addComponent(pnlColorForDerivative, 20, 20, 20)
+                                    .addGap(4)
+                                    .addComponent(
+                                        derivativeColorChooserLabel, 
+                                        SHRINK, 
+                                        SHRINK, 
+                                        SHRINK
+                                    )
                                 )
-//                                .addComponent(pnlColorForDerivative, 20, 20, 20)
-                                .addGap(4)
-                                .addComponent(pointsIsPaintCheckBox, 50, 50, 100)
-                                .addGap(4)
-                                .addComponent(functionIsPaintCheckBox, 50, 50, 100)
-                                .addGap(4)
-                                .addComponent(derivativeIsPaintCheckBox, 50, 50, 100)
-                                .addGap(4)
+                        )
                         )
                 )
                 .addGap(4)
         )
         layout = gl
         pack()
+    }
+
+    companion object{
+        val SHRINK = GroupLayout.PREFERRED_SIZE
+        val GROW = GroupLayout.DEFAULT_SIZE
     }
 }
